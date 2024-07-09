@@ -19,9 +19,9 @@ export async function supabaseServerClient() {
           cookieStore.set({ name, value: "", ...options });
         },
       },
-    },
+    }
   );
 
-  // supabase.auth.getUser();
+  //   supabase.auth.getUser();
   return supabase;
 }
