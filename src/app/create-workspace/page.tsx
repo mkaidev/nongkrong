@@ -1,15 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import slugify from "slugify";
+import { v4 as uuid } from "uuid";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Typography from "@/components/ui/typography";
 import { useCreateWorkspaceValues } from "@/hooks/create-workspace-values";
+import { createWorkspace } from "@/actions/create-workspace";
+import ImageUpload from "@/components/image-upload";
 
 const CreateWorkspace = () => {
   const { currStep } = useCreateWorkspaceValues();
+
   let stepInView = null;
 
   switch (currStep) {
@@ -85,7 +91,19 @@ const Step2 = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const slug = slugify(name);
+    const invite_code = uuid();
+    const error = await createWorkspace({ imageUrl, name, slug, invite_code });
+    setIsSubmitting(false);
+    if (error?.error) {
+      console.log(error);
+      return toast.error("Couldn't create workspace. Please try again.");
+    }
+    toast.success("Workspace created successfully");
+    router.push("/");
+  };
 
   return (
     <>
@@ -110,7 +128,7 @@ const Step2 = () => {
           disabled={isSubmitting}
           className="mt-6 flex flex-col items-center space-y-9"
         >
-          {/* IMAGE UPLOAD COMPONENT */}
+          <ImageUpload />
           <div className="space-x-5">
             <Button
               onClick={() => {
